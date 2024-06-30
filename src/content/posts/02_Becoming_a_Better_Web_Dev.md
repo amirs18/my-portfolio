@@ -1,3 +1,10 @@
+---
+title: "Becoming a Better Web Developer"
+publishedAt: 2023-06-30
+description: ""
+slug: "Becoming a Better Web Developer"
+isPublish: true
+---
 # Becoming a Better Web Developer
 
 Becoming a better web developer is a journey that involves continuous learning and practice. Whether you're a beginner or an intermediate developer, there are always new skills to acquire and areas to improve. In this blog post, we'll explore three key areas that can significantly enhance your development skills: engaging with GitHub and the open-source community, effective content consumption, and the importance of solo projects.
