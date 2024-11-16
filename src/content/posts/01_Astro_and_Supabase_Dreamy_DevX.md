@@ -1,6 +1,6 @@
 ---
 title: "Astro and Supabase for a Dreamy DevX"
-publishedAt: 2023-05-24
+publishedAt: 2024-05-24
 description: ""
 slug: "Astro and Supabase Dreamy DevX"
 isPublish: true
