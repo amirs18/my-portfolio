@@ -1,4 +1,3 @@
-
 ---
 title: "Effect TS in Full-Stack Applications: Solving Real-World Challenges"
 publishedAt: 2025-08-04
@@ -72,22 +71,21 @@ interface ApiError {
   status: number;
 }
 
-const fetchUser = (userId: string) => 
+const fetchUser = (userId: string) =>
   Effect.tryPromise({
-    try: () => fetch(`/api/users/${userId}`).then(res => res.json()),
-    catch: (error) => new Error(`Network error: ${error.message}` as ApiError)
-  })
-  .pipe(
-    Effect.flatMap(response => 
-      response.ok 
-        ? Effect.succeed(response.data as User)
-        : Effect.fail(new Error(`HTTP ${response.status}: ${response.statusText}`) as ApiError)
-    )
-  );
+    try: async () => {
+      const response = await fetch(`/api/users/${userId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    },
+    catch: (error) => new Error(`Network error: ${error.message}`)
+  });
 
-// Usage with proper error handling
+// Usage with direct error handling
 const getUser = (userId: string) =>
-  Effect.either(fetchUser(userId)).pipe(
+  fetchUser(userId).pipe(
     Effect.match({
       onFailure: (error) => console.error('User fetch failed:', error.message),
       onSuccess: (user) => console.log('User:', user.name)
@@ -228,7 +226,7 @@ const transferMoney = (fromId: string, toId: string, amount: number) =>
   });
 
 // Usage
-const program = Effect.either(transferMoney('user1', 'user2', 100)).pipe(
+const program = transferMoney('user1', 'user2', 100).pipe(
   Layer.use(DatabaseLive),
   Effect.match({
     onFailure: (error) => console.error('Transfer failed:', error.message),
@@ -369,15 +367,13 @@ const AuthServiceLive = Layer.effect(
 
 // Usage
 const authenticate = (email: string, password: string) =>
-  Effect.either(
-    Layer.use(AuthServiceLive)(
-      Layer.use(UserServiceLive)(
-        Layer.use(JwtServiceLive)(
-          Effect.gen(function* () {
-            const auth = yield* AuthService;
-            return yield* auth.authenticate(email, password);
-          })
-        )
+  Layer.use(AuthServiceLive)(
+    Layer.use(UserServiceLive)(
+      Layer.use(JwtServiceLive)(
+        Effect.gen(function* () {
+          const auth = yield* AuthService;
+          return yield* auth.authenticate(email, password);
+        })
       )
     )
   ).pipe(
@@ -524,9 +520,7 @@ const getDataWithFallback = <T>(
   fetchFunction: () => Effect.Effect<T, Error>,
   staleTtl: number = 30 * 60 * 1000 // 30 minutes for stale data
 ) =>
-  Effect.either(
-    fetchDataWithCache(key, fetchFunction)
-  ).pipe(
+  fetchDataWithCache(key, fetchFunction).pipe(
     Effect.catchAll((error) => {
       // Try to get stale data as fallback
       return Effect.gen(function* () {
