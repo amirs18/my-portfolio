@@ -7,6 +7,11 @@ export type Project = {
 
 const projects: Project[] = [
   {
+    title: "PDF Ambulance",
+    techs: ["PDF Tools"],
+    link: "https://pdfambulance.com",
+  },
+  {
     title: "Apoint (appointment management system)",
     techs: ["Astro", "TypeScript", "Supabase"],
     link: "https://astro-supabase-apoint.vercel.app",
